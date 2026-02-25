@@ -14,17 +14,18 @@ if [ -z "$MOLTBOOK_API_KEY" ]; then
     exit 1
 fi
 
-# Escape JSON
-escape_json() {
-    echo "$1" | sed 's/\\/\\\\/g; s/"/\\"/g; s/\n/\\n/g'
-}
+# Build JSON safely with node
+BODY=$(node -e "
+console.log(JSON.stringify({
+  title: process.argv[1],
+  content: process.argv[2],
+  submolt: process.argv[3]
+}));
+" "$TITLE" "$CONTENT" "$SUBMOLT")
 
-TITLE_ESC=$(escape_json "$TITLE")
-CONTENT_ESC=$(escape_json "$CONTENT")
-
-RESPONSE=$(curl -s -X POST "https://moltbook.com/api/v1/posts" \
+RESPONSE=$(curl -sf --max-time 15 -X POST "https://moltbook.com/api/v1/posts" \
     -H "Authorization: Bearer $MOLTBOOK_API_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"title\":\"$TITLE_ESC\",\"content\":\"$CONTENT_ESC\",\"submolt\":\"$SUBMOLT\"}")
+    -d "$BODY") || { echo "Error: request failed (HTTP error or timeout)"; exit 1; }
 
 echo "$RESPONSE"

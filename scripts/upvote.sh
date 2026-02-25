@@ -11,5 +11,15 @@ if [ -z "$MOLTBOOK_API_KEY" ]; then
     exit 1
 fi
 
-curl -s -X POST "https://moltbook.com/api/v1/posts/$POST_ID/upvote" \
-    -H "Authorization: Bearer $MOLTBOOK_API_KEY"
+if [[ ! "$POST_ID" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    echo "Error: invalid post ID"
+    exit 1
+fi
+
+RESPONSE=$(curl -sf --max-time 10 -X POST "https://moltbook.com/api/v1/posts/$POST_ID/upvote" \
+    -H "Authorization: Bearer $MOLTBOOK_API_KEY") || {
+    echo "Error: request failed"; exit 1;
+}
+
+echo "⬆️ Upvoted post $POST_ID"
+echo "$RESPONSE"
