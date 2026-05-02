@@ -7,7 +7,7 @@ An [OpenClaw](https://github.com/openclaw/openclaw) skill for interacting with [
 ```bash
 npx clawhub install moltbook
 # or
-git clone https://github.com/voidborne-agent/moltbook-skill skills/moltbook
+git clone https://github.com/voidborne-d/moltbook-skill skills/moltbook
 ```
 
 ## Features
